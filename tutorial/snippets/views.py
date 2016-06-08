@@ -22,38 +22,13 @@ def api_root(request, format=None):
     })
 '''
 
+
 class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     """
     This viewset automatically provides `list` and `detail` actions.
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-    def get_object(self, view_name, view_args, view_kwargs):
-        lookup_kwargs = {
-           'user__snippets': view_kwargs['parent_lookup_user'],
-           'pk': view_kwargs['pk']
-        }
-        import ipdb; ipdb.set_trace()
-        return self.get_queryset().get(**lookup_kwargs)
-
-
-'''
-    def list(self, request, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
-        print("this is the params: ")
-        print(request.query_params)
-'''
-'''
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-'''
 
 
 class SnippetViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
@@ -75,29 +50,3 @@ class SnippetViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-'''
-class SnippetList(generics.ListCreateAPIView):
-    queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-
-class SnippetHightlight(generics.GenericAPIView):
-    queryset = Snippet.objects.all()
-    renderer_classes = (renderers.StaticHTMLRenderer,)
-
-    def get(self, request, *args, **kwargs):
-        snippet = self.get_object()
-        return Response(snippet.highlighted)
-
-
-class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
-'''

@@ -26,7 +26,6 @@ router.register(
     r'snippets', views.SnippetViewSet, base_name='snippet',
     parents_query_lookups=['user']
 )
-
 #router.register(
 #    r'snippets', views.SnippetViewSet, base_name='snippet',
 #)
