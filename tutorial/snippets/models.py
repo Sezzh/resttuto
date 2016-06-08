@@ -29,7 +29,7 @@ class Snippet(models.Model):
     style = models.CharField(
         choices=STYLE_CHOICES, default='friendly', max_length=100
     )
-    owner = models.ForeignKey('auth.User', related_name='snippets')
+    user = models.ForeignKey('auth.User', related_name='snippets')
     highlighted = models.TextField()
 
     class Meta:
@@ -52,3 +52,6 @@ class Snippet(models.Model):
             self.code, lexer, formatter
         )
         super(Snippet, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return '%s, %d' % (self.title, self.pk)

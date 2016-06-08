@@ -16,11 +16,20 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
+from rest_framework_extensions.routers import ExtendedDefaultRouter
 from snippets import views
 
-router = DefaultRouter()
-router.register(r'snippets', views.SnippetViewSet)
-router.register(r'users', views.UserViewSet)
+router = ExtendedDefaultRouter()
+router.register(
+    r'users', views.UserViewSet, base_name='user'
+).register(
+    r'snippets', views.SnippetViewSet, base_name='snippet',
+    parents_query_lookups=['user']
+)
+
+#router.register(
+#    r'snippets', views.SnippetViewSet, base_name='snippet',
+#)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

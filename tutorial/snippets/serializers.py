@@ -1,62 +1,44 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework_extensions.fields import ResourceUriField
 from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
+from snippets.fields import SnippetHyperlinkRelatedField
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    snippets = serializers.HyperlinkedRelatedField(
-        many=True, view_name='snippet-detail', read_only=True
+    snippets = SnippetHyperlinkRelatedField(
+        many=True, view_name='snippet-detail'
     )  # This line is for reverse relationship
 
     class Meta:
         model = User
         fields = (
-            'url', 'username', 'snippets'
+            'url', 'id', 'username', 'snippets'
         )
 
 
-class SnippetModelSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    highlight = serializers.HyperlinkedIdentityField(
-        view_name='snippet-highlight', format='html'
-    )
+class SnippetSerializer(serializers.HyperlinkedModelSerializer):
+    #user = serializers.HyperlinkedRelatedField(
+    #    view_name='user-detail',
+    #    read_only=True,
+    #)
+    #highlight = serializers.HyperlinkedIdentityField(
+    #    view_name='snippet-highlight', format='html'
+    #)
+
+    def save(self, **kwargs):
+        print ("se creo una nueva instancia")
+        super().save(**kwargs)
+
+    def validate_title(self, value):
+        if len(value) > 5:
+            return value
+        else:
+            raise serializers.ValidationError("El nombre no coincide...")
 
     class Meta:
         model = Snippet
         fields = (
-            'url', 'highlight', 'title', 'code', 'linenos', 'language',
-            'style', 'owner'
+            'id', 'title', 'code', 'linenos', 'language',
+            'style'  #, 'highlight'#, 'user'
         )
-
-
-class SnippetSerializer(serializers.Serializer):
-    pk = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(
-        required=False, allow_blank=True, max_length=100
-    )
-    code = serializers.CharField(style={'base_template': 'textarea.html'})  # *
-    linenos = serializers.BooleanField(required=False)
-    language = serializers.ChoiceField(
-        choices=LANGUAGE_CHOICES, default='python'
-    )
-    style = serializers.ChoiceField(
-        choices=STYLE_CHOICES, default='friendly'
-    )
-
-    def create(self, validated_data):
-        """Create and return a new `Snippet` instance, given the validated data
-        """
-        return Snippet.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the
-        validated data
-        """
-        instance.title = validated_data.get('title', instance.title)
-        instance.code = validated_data.get('code', instance.code)
-        instance.linenos = validated_data.get('linenos', instance.linenos)
-        instance.language = validated_data.get('language', instance.language)
-        instance.style = validated_data.get('style', instance.style)
-        instance.save()
-        return instance
