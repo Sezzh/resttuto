@@ -9,7 +9,7 @@ class SnippetHyperlinkedIdentityField(HyperlinkedIdentityField):
             'parent_lookup_user': obj.user_id,
             'pk': obj.pk
         }
-        #import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         url = reverse(
             view_name, kwargs=url_kwargs, request=request, format=format
         )

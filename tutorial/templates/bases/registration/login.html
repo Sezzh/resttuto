@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  {% block content %}
+
+  {% if form.errors %}
+    <p>your username and password didn't match...</p>
+  {% endif %}
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>Your account doesn't has access to this page.</p>
+    {% else %}
+      <p>Please login to see this page...</p>
+    {% endif %}
+  {% endif %}
+    <h1>Web auth login</h1>
+    <form action="{% url 'login' %}" method="post">
+      <div>
+        {{ form.username }}
+      </div>
+      <div>
+        {{ form.password }}
+      </div>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <input type="submit" value="login">
+    </form>
+
+  {% endblock content %}
+</body>
+</html>

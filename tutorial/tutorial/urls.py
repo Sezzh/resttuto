@@ -1,4 +1,4 @@
-"""tutorial URL Configuration
+"""tutorial URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.9/topics/http/urls/
@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 from snippets import views
@@ -26,15 +27,29 @@ router.register(
     r'snippets', views.SnippetViewSet, base_name='snippet',
     parents_query_lookups=['user']
 )
-#router.register(
-#    r'snippets', views.SnippetViewSet, base_name='snippet',
-#)
+
+'''
+router.register(
+    r'snippets', views.SnippetViewSet, base_name='snippet',
+)
+'''
+
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(
+        r'^o/',
+        include('oauth2_provider.urls', namespace='oauth2_provider')
+    ),
+    url(
+        r'^accounts/', include('django.contrib.auth.urls')
+    ),
     url(
         r'^api-auth/',
         include('rest_framework.urls', namespace='rest_framework')
     ),
     url(r'^admin/', admin.site.urls),
+    url(
+        r'^api/hello', views.ApiEndPoint.as_view()
+    ),
 ]

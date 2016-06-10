@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import renderers
@@ -7,6 +8,7 @@ from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view, detail_route
 from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
+from oauth2_provider.views.generic import ProtectedResourceView
 from snippets.models import Snippet
 from snippets.serializers import (
     SnippetSerializer, UserSerializer
@@ -32,8 +34,8 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 
 class SnippetViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
+    """ Bebi.
+    This viewset automatically provides `list`, `create`, `retrieve`.
     `update`, and `destroy` actions.
     """
     queryset = Snippet.objects.all()
@@ -49,4 +51,12 @@ class SnippetViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         return Response(snippet.highlighted)
 
     def perform_create(self, serializer):
+        """
+        """
         serializer.save(user=self.request.user)
+
+
+class ApiEndPoint(ProtectedResourceView):
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse("hello world! Oauth2!")
